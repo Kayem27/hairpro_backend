@@ -17,7 +17,7 @@ const sendEmail = async ({ to, subject, html }) => {
 
   try {
     const data = await resend.emails.send({
-      from: 'HairPro <noreply@hairpro.fr>',
+      from: 'HairPro <noreply@hairpro.sbs>',
       to,
       subject,
       html
