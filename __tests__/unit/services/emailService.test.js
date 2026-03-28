@@ -1,10 +1,10 @@
-// Test emailService in fallback mode (no Resend API key)
+// Test emailService in fallback mode (no Brevo API key)
 const originalEnv = process.env;
 
 beforeEach(() => {
   jest.resetModules();
   process.env = { ...originalEnv, APP_URL: 'http://localhost:5173' };
-  delete process.env.RESEND_API_KEY;
+  delete process.env.BREVO_API_KEY;
 });
 
 afterAll(() => {

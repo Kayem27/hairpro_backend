@@ -1,26 +1,26 @@
-let resend = null;
+let brevo = null;
 
 try {
-  if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== 're_placeholder') {
-    const { Resend } = require('resend');
-    resend = new Resend(process.env.RESEND_API_KEY);
+  if (process.env.BREVO_API_KEY && process.env.BREVO_API_KEY !== 'xsmtpsib-placeholder') {
+    const { BrevoClient } = require('@getbrevo/brevo');
+    brevo = new BrevoClient({ apiKey: process.env.BREVO_API_KEY });
   }
 } catch (e) {
-  console.log('Resend non configuré, emails désactivés');
+  console.log('Brevo non configuré, emails désactivés');
 }
 
 const sendEmail = async ({ to, subject, html }) => {
-  if (!resend) {
+  if (!brevo) {
     console.log(`[Email simulé] To: ${to}, Subject: ${subject}`);
     return { success: true, simulated: true };
   }
 
   try {
-    const data = await resend.emails.send({
-      from: 'HairPro <noreply@hairpro.sbs>',
-      to,
+    const data = await brevo.transactionalEmails.sendTransacEmail({
+      sender: { name: 'HairPro', email: 'noreply@hairpro.sbs' },
+      to: [{ email: to }],
       subject,
-      html
+      htmlContent: html
     });
     return { success: true, data };
   } catch (error) {

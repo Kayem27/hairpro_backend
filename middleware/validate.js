@@ -12,7 +12,7 @@ const handleValidation = (req, res, next) => {
 };
 
 const registerValidation = [
-  body('email').isEmail().withMessage('Email invalide').normalizeEmail(),
+  body('email').isEmail().withMessage('Email invalide').normalizeEmail({ gmail_remove_dots: false }),
   body('password').isLength({ min: 8 }).withMessage('Mot de passe trop court'),
   body('firstName').trim().notEmpty().withMessage('Prénom requis').escape(),
   body('lastName').trim().notEmpty().withMessage('Nom requis').escape(),
@@ -21,7 +21,7 @@ const registerValidation = [
 ];
 
 const loginValidation = [
-  body('email').isEmail().withMessage('Email invalide').normalizeEmail(),
+  body('email').isEmail().withMessage('Email invalide').normalizeEmail({ gmail_remove_dots: false }),
   body('password').notEmpty().withMessage('Mot de passe requis'),
   handleValidation
 ];
@@ -47,7 +47,7 @@ const billingValidation = [
 ];
 
 const forgotPasswordValidation = [
-  body('email').isEmail().withMessage('Email invalide').normalizeEmail(),
+  body('email').isEmail().withMessage('Email invalide').normalizeEmail({ gmail_remove_dots: false }),
   handleValidation
 ];
 

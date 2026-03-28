@@ -93,7 +93,6 @@ function buildDeterministicAvailabilities(profileIds, slotIds, days = 14) {
 
     for (let p = 0; p < profileIds.length; p++) {
       for (let s = 0; s < slotIds.length; s++) {
-        // règle déterministe : environ 2 slots sur 3 dispo selon jour/pro/slot
         const isAvailable = ((i + p + s) % 3) !== 0;
 
         if (isAvailable) {
@@ -118,91 +117,107 @@ async function seed() {
 
     await clearCollections();
 
-    const passwordHash = await bcrypt.hash('password', 10);
+    // Mots de passe
+    const strongHash = await bcrypt.hash('H@irpro6437', 10);
+    const fakeHash = await bcrypt.hash('FakeUser123!', 10);
 
     // ===== USERS =====
     const users = await User.insertMany(
       [
+        // --- Admin (réel) ---
         {
           user_id: 'user-admin-001',
-          email: 'admin@example.com',
-          password_hash: passwordHash,
-          first_name: 'Admin',
-          last_name: 'HairPro',
+          email: 'abdoulatuf.pro@gmail.com',
+          password_hash: strongHash,
+          first_name: 'Abdou',
+          last_name: 'Latuf',
           role: 'admin',
-          status: 'active'
+          status: 'active',
+          email_verified: true
         },
+        // --- Pro réel ---
         {
           user_id: 'user-pro-001',
-          email: 'pro@example.com',
-          password_hash: passwordHash,
-          first_name: 'Sophie',
-          last_name: 'Martin',
+          email: 'abdoulatuf.hatem02@gmail.com',
+          password_hash: strongHash,
+          first_name: 'Hatem',
+          last_name: 'Bouazza',
           role: 'pro',
-          status: 'active'
+          status: 'active',
+          email_verified: true
         },
+        // --- Pros fictifs ---
         {
           user_id: 'user-pro-002',
-          email: 'pro2@example.com',
-          password_hash: passwordHash,
+          email: 'lucas.bernard@fakehairpro.test',
+          password_hash: fakeHash,
           first_name: 'Lucas',
           last_name: 'Bernard',
           role: 'pro',
-          status: 'active'
+          status: 'active',
+          email_verified: true
         },
         {
           user_id: 'user-pro-003',
-          email: 'pro3@example.com',
-          password_hash: passwordHash,
+          email: 'emma.dubois@fakehairpro.test',
+          password_hash: fakeHash,
           first_name: 'Emma',
           last_name: 'Dubois',
           role: 'pro',
-          status: 'active'
+          status: 'active',
+          email_verified: true
         },
         {
           user_id: 'user-pro-004',
-          email: 'pro4@example.com',
-          password_hash: passwordHash,
+          email: 'thomas.leroy@fakehairpro.test',
+          password_hash: fakeHash,
           first_name: 'Thomas',
           last_name: 'Leroy',
           role: 'pro',
-          status: 'active'
+          status: 'active',
+          email_verified: true
         },
         {
           user_id: 'user-pro-005',
-          email: 'pro5@example.com',
-          password_hash: passwordHash,
+          email: 'camille.moreau@fakehairpro.test',
+          password_hash: fakeHash,
           first_name: 'Camille',
           last_name: 'Moreau',
           role: 'pro',
-          status: 'active'
+          status: 'active',
+          email_verified: true
         },
         {
           user_id: 'user-pro-006',
-          email: 'pro6@example.com',
-          password_hash: passwordHash,
-          first_name: 'Julie',
-          last_name: 'Petit',
+          email: 'aminata.diallo@fakehairpro.test',
+          password_hash: fakeHash,
+          first_name: 'Aminata',
+          last_name: 'Diallo',
           role: 'pro',
-          status: 'active'
+          status: 'active',
+          email_verified: true
         },
+        // --- Client réel ---
         {
           user_id: 'user-client-001',
-          email: 'client@example.com',
-          password_hash: passwordHash,
-          first_name: 'Marie',
-          last_name: 'Dupont',
+          email: 'kyrsirius52@gmail.com',
+          password_hash: strongHash,
+          first_name: 'Kyrian',
+          last_name: 'Sirius',
           role: 'client',
-          status: 'active'
+          status: 'active',
+          email_verified: true
         },
+        // --- Client fictif ---
         {
           user_id: 'user-client-002',
-          email: 'client2@example.com',
-          password_hash: passwordHash,
+          email: 'pierre.laurent@fakehairpro.test',
+          password_hash: fakeHash,
           first_name: 'Pierre',
           last_name: 'Laurent',
           role: 'client',
-          status: 'active'
+          status: 'active',
+          email_verified: true
         }
       ],
       { ordered: true }
@@ -210,14 +225,8 @@ async function seed() {
 
     const [
       adminUser,
-      proUser1,
-      proUser2,
-      proUser3,
-      proUser4,
-      proUser5,
-      proUser6,
-      clientUser,
-      clientUser2
+      proUser1, proUser2, proUser3, proUser4, proUser5, proUser6,
+      clientUser, clientUser2
     ] = users;
 
     console.log('Utilisateurs créés');
@@ -241,12 +250,12 @@ async function seed() {
           profile_id: 'pro-001',
           user_id: proUser1.user_id,
           description:
-            "Coiffeuse passionnée avec 10 ans d'expérience. Spécialisée dans les colorations naturelles et les coupes modernes. Je me déplace chez vous dans tout Paris et sa proche banlieue.",
+            "Coiffeur passionné avec 8 ans d'expérience. Spécialisé dans les coupes modernes homme et femme, colorations et techniques tendance. Je me déplace chez vous dans tout Paris.",
           city: 'Paris',
           lat: 48.8566,
           lng: 2.3522,
           radius_km: 15,
-          photo_url: '',
+          photo_url: 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop&crop=face',
           is_verified: true,
           is_active: true,
           average_rating: 4.8,
@@ -257,11 +266,11 @@ async function seed() {
           user_id: proUser2.user_id,
           description:
             'Barbier et coiffeur homme. Expert en dégradés, tailles de barbe et soins capillaires masculins. Ambiance détendue garantie !',
-          city: 'Lyon',
-          lat: 45.764,
-          lng: 4.8357,
+          city: 'Paris',
+          lat: 48.8606,
+          lng: 2.3376,
           radius_km: 20,
-          photo_url: '',
+          photo_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face',
           is_verified: true,
           is_active: true,
           average_rating: 4.5,
@@ -276,7 +285,7 @@ async function seed() {
           lat: 48.87,
           lng: 2.34,
           radius_km: 25,
-          photo_url: '',
+          photo_url: 'https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=400&h=400&fit=crop&crop=face',
           is_verified: true,
           is_active: true,
           average_rating: 4.9,
@@ -286,27 +295,27 @@ async function seed() {
           profile_id: 'pro-004',
           user_id: proUser4.user_id,
           description:
-            'Coiffeur polyvalent, homme et femme. Passionné par les nouvelles tendances. Formations régulières pour rester à la pointe.',
-          city: 'Marseille',
-          lat: 43.2965,
-          lng: 5.3698,
+            'Coiffeur polyvalent homme et femme. Passionné par les nouvelles tendances. Formations régulières pour rester à la pointe de la mode capillaire.',
+          city: 'Paris',
+          lat: 48.845,
+          lng: 2.375,
           radius_km: 15,
-          photo_url: '',
-          is_verified: false,
+          photo_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
+          is_verified: true,
           is_active: true,
-          average_rating: 4.2,
-          review_count: 5
+          average_rating: 4.3,
+          review_count: 6
         },
         {
           profile_id: 'pro-005',
           user_id: proUser5.user_id,
           description:
-            'Experte en lissage brésilien, soins kératine et techniques de coloration balayage. Produits bio et naturels privilégiés.',
+            'Experte en lissage brésilien, soins kératine et techniques de coloration balayage. Produits bio et naturels privilégiés pour le respect de vos cheveux.',
           city: 'Paris',
-          lat: 48.845,
+          lat: 48.852,
           lng: 2.36,
           radius_km: 10,
-          photo_url: '',
+          photo_url: 'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=400&h=400&fit=crop&crop=face',
           is_verified: true,
           is_active: true,
           average_rating: 4.7,
@@ -316,16 +325,16 @@ async function seed() {
           profile_id: 'pro-006',
           user_id: proUser6.user_id,
           description:
-            'Coiffeuse spécialisée cheveux bouclés et afro. Techniques de twist, tresses et soins adaptés. Ambiance chaleureuse et bienveillante.',
-          city: 'Lyon',
-          lat: 45.758,
-          lng: 4.832,
+            'Coiffeuse spécialisée cheveux bouclés, crépus et afro. Techniques de twist, tresses, tissages et soins adaptés. Ambiance chaleureuse et bienveillante.',
+          city: 'Paris',
+          lat: 48.865,
+          lng: 2.325,
           radius_km: 12,
-          photo_url: '',
-          is_verified: false,
+          photo_url: 'https://images.unsplash.com/photo-1589156280159-27698a70f29e?w=400&h=400&fit=crop&crop=face',
+          is_verified: true,
           is_active: true,
           average_rating: 4.6,
-          review_count: 7
+          review_count: 9
         }
       ],
       { ordered: true }
@@ -333,37 +342,80 @@ async function seed() {
 
     console.log('Profils professionnels créés');
 
+    // ===== PORTFOLIO IMAGES =====
+    await PortfolioImage.insertMany(
+      [
+        // Pro 1 - Hatem (coupes modernes)
+        { image_id: uuidv4(), profile_id: 'pro-001', url: 'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=600&fit=crop' },
+        { image_id: uuidv4(), profile_id: 'pro-001', url: 'https://images.unsplash.com/photo-1562004760-aceed7bb0fe3?w=600&h=600&fit=crop' },
+        { image_id: uuidv4(), profile_id: 'pro-001', url: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&h=600&fit=crop' },
+
+        // Pro 2 - Lucas (barbier)
+        { image_id: uuidv4(), profile_id: 'pro-002', url: 'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=600&fit=crop' },
+        { image_id: uuidv4(), profile_id: 'pro-002', url: 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=600&fit=crop' },
+        { image_id: uuidv4(), profile_id: 'pro-002', url: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=600&h=600&fit=crop' },
+
+        // Pro 3 - Emma (mariage)
+        { image_id: uuidv4(), profile_id: 'pro-003', url: 'https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=600&h=600&fit=crop' },
+        { image_id: uuidv4(), profile_id: 'pro-003', url: 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=600&h=600&fit=crop' },
+        { image_id: uuidv4(), profile_id: 'pro-003', url: 'https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?w=600&h=600&fit=crop' },
+
+        // Pro 4 - Thomas (polyvalent)
+        { image_id: uuidv4(), profile_id: 'pro-004', url: 'https://images.unsplash.com/photo-1620331311520-246422fd82f9?w=600&h=600&fit=crop' },
+        { image_id: uuidv4(), profile_id: 'pro-004', url: 'https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?w=600&h=600&fit=crop' },
+
+        // Pro 5 - Camille (lissage/coloration)
+        { image_id: uuidv4(), profile_id: 'pro-005', url: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&h=600&fit=crop' },
+        { image_id: uuidv4(), profile_id: 'pro-005', url: 'https://images.unsplash.com/photo-1560869713-7d0a29430803?w=600&h=600&fit=crop' },
+        { image_id: uuidv4(), profile_id: 'pro-005', url: 'https://images.unsplash.com/photo-1492106087820-71f1a00d2b11?w=600&h=600&fit=crop' },
+
+        // Pro 6 - Aminata (afro/tresses)
+        { image_id: uuidv4(), profile_id: 'pro-006', url: 'https://images.unsplash.com/photo-1595959183082-7b570b7e1e6b?w=600&h=600&fit=crop' },
+        { image_id: uuidv4(), profile_id: 'pro-006', url: 'https://images.unsplash.com/photo-1522337094846-8a818d899ae4?w=600&h=600&fit=crop' },
+        { image_id: uuidv4(), profile_id: 'pro-006', url: 'https://images.unsplash.com/photo-1611042553365-9b101441c135?w=600&h=600&fit=crop' }
+      ],
+      { ordered: true }
+    );
+
+    console.log('Images portfolio créées');
+
     // ===== SERVICES =====
     await Service.insertMany(
       [
+        // Pro 1 - Hatem (coupes modernes, coloration)
         { service_id: 'svc-001', profile_id: 'pro-001', name: 'Coupe femme', estimated_price: 35, duration: 45 },
         { service_id: 'svc-002', profile_id: 'pro-001', name: 'Coloration', estimated_price: 55, duration: 90 },
         { service_id: 'svc-003', profile_id: 'pro-001', name: 'Balayage', estimated_price: 70, duration: 120 },
         { service_id: 'svc-004', profile_id: 'pro-001', name: 'Brushing', estimated_price: 25, duration: 30 },
 
+        // Pro 2 - Lucas (barbier)
         { service_id: 'svc-005', profile_id: 'pro-002', name: 'Coupe homme', estimated_price: 20, duration: 30 },
         { service_id: 'svc-006', profile_id: 'pro-002', name: 'Taille de barbe', estimated_price: 15, duration: 20 },
         { service_id: 'svc-007', profile_id: 'pro-002', name: 'Coupe + Barbe', estimated_price: 30, duration: 45 },
         { service_id: 'svc-008', profile_id: 'pro-002', name: 'Dégradé', estimated_price: 25, duration: 40 },
 
+        // Pro 3 - Emma (mariage/événements)
         { service_id: 'svc-009', profile_id: 'pro-003', name: 'Coiffure mariage', estimated_price: 120, duration: 120 },
         { service_id: 'svc-010', profile_id: 'pro-003', name: 'Chignon', estimated_price: 60, duration: 60 },
         { service_id: 'svc-011', profile_id: 'pro-003', name: 'Essai coiffure', estimated_price: 80, duration: 90 },
         { service_id: 'svc-012', profile_id: 'pro-003', name: 'Coupe femme', estimated_price: 40, duration: 45 },
 
+        // Pro 4 - Thomas (polyvalent)
         { service_id: 'svc-013', profile_id: 'pro-004', name: 'Coupe homme', estimated_price: 18, duration: 30 },
         { service_id: 'svc-014', profile_id: 'pro-004', name: 'Coupe femme', estimated_price: 30, duration: 45 },
         { service_id: 'svc-015', profile_id: 'pro-004', name: 'Coloration', estimated_price: 45, duration: 90 },
 
+        // Pro 5 - Camille (lissage/soins)
         { service_id: 'svc-016', profile_id: 'pro-005', name: 'Lissage brésilien', estimated_price: 150, duration: 180 },
         { service_id: 'svc-017', profile_id: 'pro-005', name: 'Soin kératine', estimated_price: 90, duration: 120 },
         { service_id: 'svc-018', profile_id: 'pro-005', name: 'Balayage', estimated_price: 75, duration: 120 },
         { service_id: 'svc-019', profile_id: 'pro-005', name: 'Coupe + Brushing', estimated_price: 50, duration: 60 },
 
+        // Pro 6 - Aminata (afro/tresses)
         { service_id: 'svc-020', profile_id: 'pro-006', name: 'Tresses africaines', estimated_price: 60, duration: 120 },
         { service_id: 'svc-021', profile_id: 'pro-006', name: 'Twist', estimated_price: 45, duration: 90 },
         { service_id: 'svc-022', profile_id: 'pro-006', name: 'Soin cheveux bouclés', estimated_price: 40, duration: 60 },
-        { service_id: 'svc-023', profile_id: 'pro-006', name: 'Coupe afro', estimated_price: 35, duration: 45 }
+        { service_id: 'svc-023', profile_id: 'pro-006', name: 'Tissage', estimated_price: 80, duration: 150 }
       ],
       { ordered: true }
     );
@@ -454,6 +506,26 @@ async function seed() {
           status: 'completed',
           notes: 'Lissage + soin',
           service_ids: ['svc-016']
+        },
+        {
+          appointment_id: 'apt-008',
+          client_id: clientUser.user_id,
+          profile_id: 'pro-006',
+          date: formatDateOnly(addDays(today, -5)),
+          slot_id: 'slot-morning',
+          status: 'completed',
+          notes: 'Tresses pour un événement',
+          service_ids: ['svc-020']
+        },
+        {
+          appointment_id: 'apt-009',
+          client_id: clientUser2.user_id,
+          profile_id: 'pro-004',
+          date: formatDateOnly(addDays(today, -4)),
+          slot_id: 'slot-afternoon',
+          status: 'completed',
+          notes: 'Coupe classique',
+          service_ids: ['svc-013']
         }
       ],
       { ordered: true }
@@ -470,7 +542,7 @@ async function seed() {
           profile_id: 'pro-001',
           appointment_id: 'apt-003',
           rating: 5,
-          comment: "Sophie est incroyable ! Ma coloration est exactement ce que je voulais. Très professionnelle et à l'écoute.",
+          comment: "Hatem est incroyable ! Ma coloration est exactement ce que je voulais. Très professionnel et à l'écoute.",
           is_visible: true
         },
         {
@@ -479,7 +551,7 @@ async function seed() {
           profile_id: 'pro-001',
           appointment_id: 'apt-005',
           rating: 5,
-          comment: 'Excellente coupe, je recommande vivement ! Sophie est très sympa et talentueuse.',
+          comment: 'Excellente coupe, je recommande vivement ! Hatem est très sympa et talentueux.',
           is_visible: true
         },
         {
@@ -506,7 +578,25 @@ async function seed() {
           profile_id: 'pro-005',
           appointment_id: 'apt-007',
           rating: 5,
-          comment: "Lissage parfait, mes cheveux n'ont jamais été aussi beaux !",
+          comment: "Lissage parfait, mes cheveux n'ont jamais été aussi beaux ! Camille est une experte.",
+          is_visible: true
+        },
+        {
+          review_id: 'rev-006',
+          client_id: clientUser.user_id,
+          profile_id: 'pro-006',
+          appointment_id: 'apt-008',
+          rating: 5,
+          comment: 'Aminata fait des tresses magnifiques ! Très patiente et le résultat est superbe.',
+          is_visible: true
+        },
+        {
+          review_id: 'rev-007',
+          client_id: clientUser2.user_id,
+          profile_id: 'pro-004',
+          appointment_id: 'apt-009',
+          rating: 4,
+          comment: 'Bonne coupe, Thomas est à la page niveau tendances. Je reviendrai.',
           is_visible: true
         }
       ],
@@ -520,8 +610,9 @@ async function seed() {
       [
         { favorite_id: uuidv4(), user_id: clientUser.user_id, profile_id: 'pro-001' },
         { favorite_id: uuidv4(), user_id: clientUser.user_id, profile_id: 'pro-003' },
-        { favorite_id: uuidv4(), user_id: clientUser.user_id, profile_id: 'pro-005' },
-        { favorite_id: uuidv4(), user_id: clientUser2.user_id, profile_id: 'pro-002' }
+        { favorite_id: uuidv4(), user_id: clientUser.user_id, profile_id: 'pro-006' },
+        { favorite_id: uuidv4(), user_id: clientUser2.user_id, profile_id: 'pro-002' },
+        { favorite_id: uuidv4(), user_id: clientUser2.user_id, profile_id: 'pro-005' }
       ],
       { ordered: true }
     );
@@ -551,21 +642,21 @@ async function seed() {
           message_id: uuidv4(),
           conversation_id: 'conv-001',
           sender_id: clientUser.user_id,
-          content: "Bonjour Sophie, j'ai réservé pour mercredi matin. Est-ce que vous pourriez apporter des échantillons de couleurs ?",
+          content: "Bonjour Hatem, j'ai réservé pour mercredi matin. Est-ce que vous pourriez apporter des échantillons de couleurs ?",
           is_read: true
         },
         {
           message_id: uuidv4(),
           conversation_id: 'conv-001',
           sender_id: proUser1.user_id,
-          content: "Bonjour Marie ! Bien sûr, je viendrai avec mon nuancier complet. Avez-vous une idée de la couleur souhaitée ?",
+          content: "Bonjour Kyrian ! Bien sûr, je viendrai avec mon nuancier complet. Avez-vous une idée de la couleur souhaitée ?",
           is_read: true
         },
         {
           message_id: uuidv4(),
           conversation_id: 'conv-001',
           sender_id: clientUser.user_id,
-          content: "Je pensais à un blond cendré, mais je suis ouverte à vos suggestions !",
+          content: "Je pensais à un blond cendré, mais je suis ouvert à vos suggestions !",
           is_read: false
         },
         {
@@ -579,7 +670,7 @@ async function seed() {
           message_id: uuidv4(),
           conversation_id: 'conv-002',
           sender_id: proUser3.user_id,
-          content: "Bonjour Marie ! Moi aussi ! Pouvez-vous m'envoyer des photos d'inspiration ?",
+          content: "Bonjour Kyrian ! Moi aussi ! Pouvez-vous m'envoyer des photos d'inspiration ?",
           is_read: false
         }
       ],
@@ -588,23 +679,63 @@ async function seed() {
 
     console.log('Conversations et messages créés');
 
-    // ===== SUBSCRIPTION =====
-    await Subscription.create({
-      subscription_id: uuidv4(),
-      user_id: proUser1.user_id,
-      plan: 'monthly',
-      status: 'active',
-      current_period_end: addDays(today, 25)
-    });
+    // ===== SUBSCRIPTIONS (tous les pros actifs) =====
+    await Subscription.insertMany(
+      [
+        {
+          subscription_id: uuidv4(),
+          user_id: proUser1.user_id,
+          plan: 'monthly',
+          status: 'active',
+          current_period_end: addDays(today, 25)
+        },
+        {
+          subscription_id: uuidv4(),
+          user_id: proUser2.user_id,
+          plan: 'monthly',
+          status: 'active',
+          current_period_end: addDays(today, 20)
+        },
+        {
+          subscription_id: uuidv4(),
+          user_id: proUser3.user_id,
+          plan: 'annual',
+          status: 'active',
+          current_period_end: addDays(today, 180)
+        },
+        {
+          subscription_id: uuidv4(),
+          user_id: proUser4.user_id,
+          plan: 'monthly',
+          status: 'active',
+          current_period_end: addDays(today, 15)
+        },
+        {
+          subscription_id: uuidv4(),
+          user_id: proUser5.user_id,
+          plan: 'annual',
+          status: 'active',
+          current_period_end: addDays(today, 300)
+        },
+        {
+          subscription_id: uuidv4(),
+          user_id: proUser6.user_id,
+          plan: 'monthly',
+          status: 'active',
+          current_period_end: addDays(today, 10)
+        }
+      ],
+      { ordered: true }
+    );
 
-    console.log('Abonnements créés');
+    console.log('Abonnements créés (6 pros actifs)');
 
     console.log('\n✅ Seed terminé avec succès !');
     console.log(`Base utilisée : ${mongoose.connection.name}`);
-    console.log('\nComptes de test :');
-    console.log('  Admin  : admin@example.com / password');
-    console.log('  Pro    : pro@example.com / password');
-    console.log('  Client : client@example.com / password');
+    console.log('\nComptes :');
+    console.log('  Admin  : abdoulatuf.pro@gmail.com / H@irpro6437');
+    console.log('  Pro    : abdoulatuf.hatem02@gmail.com / H@irpro6437');
+    console.log('  Client : kyrsirius52@gmail.com / H@irpro6437');
   } catch (err) {
     console.error('\n❌ Erreur seed :');
 
