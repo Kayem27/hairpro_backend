@@ -6,6 +6,7 @@ const subscriptionSchema = new mongoose.Schema({
   plan: { type: String, enum: ['monthly', 'annual'], required: true },
   status: { type: String, enum: ['active', 'cancelled', 'expired'], default: 'active' },
   stripe_subscription_id: { type: String, default: '' },
+  cancel_at_period_end: { type: Boolean, default: false },
   current_period_end: { type: Date, default: null },
   created_at: { type: Date, default: Date.now }
 });

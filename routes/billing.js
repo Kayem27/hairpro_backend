@@ -63,7 +63,7 @@ router.post('/create-checkout', auth, requireRole('pro'), billingValidation, asy
         },
         quantity: 1,
       }],
-      success_url: `${process.env.APP_URL}/dashboard/pro/subscription?checkout=success`,
+      success_url: `${process.env.APP_URL}/dashboard/pro/subscription?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.APP_URL}/dashboard/pro/subscription?checkout=cancel`,
       metadata: { user_id: req.user.user_id, plan }
     });
@@ -80,11 +80,61 @@ router.get('/subscription', auth, async (req, res) => {
   try {
     const sub = await Subscription.findOne({
       user_id: req.user.user_id,
-      status: 'active'
+      status: 'active',
+      current_period_end: { $gt: new Date() }
     }).lean();
     res.json(sub);
   } catch (err) {
     res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// POST /api/billing/verify-checkout - Verify a checkout session and create subscription if needed
+router.post('/verify-checkout', auth, requireRole('pro'), async (req, res) => {
+  try {
+    const { session_id } = req.body;
+    if (!session_id) return res.status(400).json({ error: 'Session ID requis' });
+
+    // Check if user already has an active subscription
+    const existing = await Subscription.findOne({ user_id: req.user.user_id, status: 'active' });
+    if (existing) return res.json(existing);
+
+    if (!stripe) return res.status(400).json({ error: 'Stripe non configuré' });
+
+    // Retrieve the checkout session from Stripe
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+
+    // Verify the session belongs to this user and is completed
+    if (session.metadata.user_id !== req.user.user_id) {
+      return res.status(403).json({ error: 'Session invalide' });
+    }
+    if (session.payment_status !== 'paid') {
+      return res.status(400).json({ error: 'Paiement non complété' });
+    }
+
+    const plan = session.metadata.plan;
+    const periodMs = (PLANS[plan]?.period_days || 30) * 24 * 60 * 60 * 1000;
+
+    // Check if subscription was already created by webhook
+    if (session.subscription) {
+      const existingBySub = await Subscription.findOne({ stripe_subscription_id: session.subscription });
+      if (existingBySub) return res.json(existingBySub);
+    }
+
+    // Create the subscription (webhook hasn't fired yet)
+    const sub = await Subscription.create({
+      subscription_id: uuidv4(),
+      user_id: req.user.user_id,
+      plan,
+      status: 'active',
+      stripe_subscription_id: session.subscription || '',
+      current_period_end: new Date(Date.now() + periodMs)
+    });
+
+    res.json(sub);
+  } catch (err) {
+    console.error('Verify checkout error:', err);
+    res.status(500).json({ error: 'Erreur lors de la vérification du paiement' });
   }
 });
 
@@ -95,13 +145,17 @@ router.post('/cancel', auth, requireRole('pro'), async (req, res) => {
     if (!sub) return res.status(404).json({ error: 'Aucun abonnement actif' });
 
     if (stripe && sub.stripe_subscription_id) {
-      await stripe.subscriptions.cancel(sub.stripe_subscription_id);
+      // Tell Stripe to cancel at period end instead of immediately
+      await stripe.subscriptions.update(sub.stripe_subscription_id, {
+        cancel_at_period_end: true
+      });
     }
 
-    sub.status = 'cancelled';
+    // Keep status active but mark for cancellation at period end
+    sub.cancel_at_period_end = true;
     await sub.save();
 
-    res.json({ message: 'Abonnement annulé' });
+    res.json({ message: 'Abonnement annulé. Vous conservez l\'accès jusqu\'au ' + new Date(sub.current_period_end).toLocaleDateString('fr-FR') + '.' });
   } catch (err) {
     console.error('Cancel subscription error:', err);
     res.status(500).json({ error: 'Erreur serveur' });

@@ -59,7 +59,6 @@ router.get('/', async (req, res) => {
         ...pro,
         first_name: user?.first_name || '',
         last_name: user?.last_name || '',
-        email: user?.email || '',
         services,
         min_price: services.length > 0 ? Math.min(...services.map(s => s.estimated_price)) : 0
       };

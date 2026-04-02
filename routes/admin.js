@@ -5,6 +5,13 @@ const Professional = require('../models/Professional');
 const Appointment = require('../models/Appointment');
 const Review = require('../models/Review');
 const Subscription = require('../models/Subscription');
+const Favorite = require('../models/Favorite');
+const Conversation = require('../models/Conversation');
+const Message = require('../models/Message');
+const Notification = require('../models/Notification');
+const Service = require('../models/Service');
+const Availability = require('../models/Availability');
+const PortfolioImage = require('../models/PortfolioImage');
 
 const router = express.Router();
 
@@ -166,6 +173,43 @@ router.put('/reviews/:id/visibility', async (req, res) => {
 
     res.json({ review_id: review.review_id, is_visible: review.is_visible });
   } catch (err) {
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// DELETE /api/admin/users/:id - Delete a user and all their data
+router.delete('/users/:id', async (req, res) => {
+  try {
+    const user = await User.findOne({ user_id: req.params.id });
+    if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+    if (user.role === 'admin') return res.status(403).json({ error: 'Impossible de supprimer un administrateur' });
+
+    const userId = user.user_id;
+    const professional = await Professional.findOne({ user_id: userId });
+    const profileId = professional?.profile_id;
+
+    await Notification.deleteMany({ user_id: userId });
+    await Favorite.deleteMany({ user_id: userId });
+    await Subscription.deleteMany({ user_id: userId });
+    await Message.deleteMany({ sender_id: userId });
+    await Review.deleteMany({ client_id: userId });
+
+    if (profileId) {
+      await Service.deleteMany({ profile_id: profileId });
+      await Availability.deleteMany({ profile_id: profileId });
+      await PortfolioImage.deleteMany({ profile_id: profileId });
+      await Review.deleteMany({ profile_id: profileId });
+      await Appointment.deleteMany({ profile_id: profileId });
+      await Professional.deleteOne({ profile_id: profileId });
+    }
+
+    await Appointment.deleteMany({ client_id: userId });
+    await Conversation.deleteMany({ participants: userId });
+    await User.deleteOne({ user_id: userId });
+
+    res.json({ message: 'Utilisateur et données supprimés' });
+  } catch (err) {
+    console.error('Admin delete user error:', err);
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
