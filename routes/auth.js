@@ -14,7 +14,7 @@ const router = express.Router();
 
 function validatePassword(password) {
   const errors = [];
-  if (password.length < 8) errors.push('au moins 8 caractères');
+  if (password.length < 12) errors.push('au moins 12 caractères');
   if (!/[A-Z]/.test(password)) errors.push('une lettre majuscule');
   if (!/[a-z]/.test(password)) errors.push('une lettre minuscule');
   if (!/[0-9]/.test(password)) errors.push('un chiffre');

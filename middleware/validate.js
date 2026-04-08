@@ -13,7 +13,7 @@ const handleValidation = (req, res, next) => {
 
 const registerValidation = [
   body('email').isEmail().withMessage('Email invalide').normalizeEmail({ gmail_remove_dots: false }),
-  body('password').isLength({ min: 8 }).withMessage('Mot de passe trop court'),
+  body('password').isLength({ min: 12 }).withMessage('Mot de passe trop court'),
   body('firstName').trim().notEmpty().withMessage('Prénom requis').escape(),
   body('lastName').trim().notEmpty().withMessage('Nom requis').escape(),
   body('role').optional().isIn(['client', 'pro']).withMessage('Rôle invalide'),
@@ -53,7 +53,7 @@ const forgotPasswordValidation = [
 
 const resetPasswordValidation = [
   body('token').notEmpty().withMessage('Token requis'),
-  body('password').isLength({ min: 8 }).withMessage('Mot de passe trop court'),
+  body('password').isLength({ min: 12 }).withMessage('Mot de passe trop court'),
   handleValidation
 ];
 

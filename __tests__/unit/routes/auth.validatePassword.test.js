@@ -5,7 +5,7 @@ describe('validatePassword (logique auth)', () => {
   // Reproducing the function from routes/auth.js
   function validatePassword(password) {
     const errors = [];
-    if (password.length < 8) errors.push('au moins 8 caractères');
+    if (password.length < 12) errors.push('au moins 12 caractères');
     if (!/[A-Z]/.test(password)) errors.push('une lettre majuscule');
     if (!/[a-z]/.test(password)) errors.push('une lettre minuscule');
     if (!/[0-9]/.test(password)) errors.push('un chiffre');
@@ -14,31 +14,31 @@ describe('validatePassword (logique auth)', () => {
   }
 
   test('devrait accepter un mot de passe fort', () => {
-    expect(validatePassword('MyP@ssw0rd')).toHaveLength(0);
+    expect(validatePassword('MyP@ssw0rd!x')).toHaveLength(0);
   });
 
   test('devrait rejeter un mot de passe trop court', () => {
     const errors = validatePassword('Aa1!');
-    expect(errors).toContain('au moins 8 caractères');
+    expect(errors).toContain('au moins 12 caractères');
   });
 
   test('devrait exiger une majuscule', () => {
-    const errors = validatePassword('myp@ssw0rd');
+    const errors = validatePassword('myp@ssw0rd!x');
     expect(errors).toContain('une lettre majuscule');
   });
 
   test('devrait exiger une minuscule', () => {
-    const errors = validatePassword('MYP@SSW0RD');
+    const errors = validatePassword('MYP@SSW0RD!X');
     expect(errors).toContain('une lettre minuscule');
   });
 
   test('devrait exiger un chiffre', () => {
-    const errors = validatePassword('MyP@ssword');
+    const errors = validatePassword('MyP@sswordxx');
     expect(errors).toContain('un chiffre');
   });
 
   test('devrait exiger un caractère spécial', () => {
-    const errors = validatePassword('MyPassw0rd');
+    const errors = validatePassword('MyPassw0rdxx');
     expect(errors).toContain('un caractère spécial (!@#$%...)');
   });
 
@@ -50,7 +50,7 @@ describe('validatePassword (logique auth)', () => {
   test('devrait accepter des caractères spéciaux variés', () => {
     const specialChars = ['!', '@', '#', '$', '%', '&', '*', '-', '_'];
     for (const char of specialChars) {
-      expect(validatePassword(`MyPassw0rd${char}`)).toHaveLength(0);
+      expect(validatePassword(`MyPassw0rd${char}x`)).toHaveLength(0);
     }
   });
 });
