@@ -1,3 +1,11 @@
+/**
+ * @file Tests unitaires du middleware d'authentification
+ * @description Vérifie le comportement du middleware auth (extraction et validation du JWT,
+ * gestion des tokens invalides/expirés, comptes suspendus) et du middleware requireRole
+ * (contrôle d'accès basé sur les rôles utilisateur : client, pro, admin).
+ * @see {@link ../../../middleware/auth.js}
+ */
+
 const jwt = require('jsonwebtoken');
 
 // Mock User model

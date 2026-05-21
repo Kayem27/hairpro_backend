@@ -1,3 +1,12 @@
+/**
+ * @file Tests unitaires du modèle Professional (Mongoose)
+ * @description Vérifie le schéma Professional : création avec données valides, champs
+ * obligatoires (profile_id, user_id), valeurs par défaut (radius_km=10, is_active=true,
+ * average_rating=0), contrainte d'unicité sur profile_id, et mise à jour des
+ * coordonnées géographiques et statistiques d'avis.
+ * @see {@link ../../../models/Professional.js}
+ */
+
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const Professional = require('../../../models/Professional');

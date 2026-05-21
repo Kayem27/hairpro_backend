@@ -1,3 +1,15 @@
+/**
+ * @file Tests d'intégration des rendez-vous
+ * @description Teste le flux complet de gestion des rendez-vous via les endpoints REST :
+ * création de rendez-vous (vérification des disponibilités, mise à jour du statut du créneau,
+ * création automatique de conversation), récupération des rendez-vous du client,
+ * annulation (libération du créneau, contrôle d'accès, statuts non annulables),
+ * et système d'avis (note, commentaire, mise à jour de la moyenne du professionnel,
+ * prévention du double avis, contrôle d'accès).
+ * Utilise MongoMemoryServer pour une base de données isolée.
+ * @see {@link ../../routes/appointments.js}
+ */
+
 const express = require('express');
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');

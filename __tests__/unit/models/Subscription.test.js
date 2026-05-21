@@ -1,3 +1,11 @@
+/**
+ * @file Tests unitaires du modèle Subscription (Mongoose)
+ * @description Vérifie le schéma Subscription : création d'un abonnement valide, énumération
+ * des plans (monthly, annual) et statuts (active, cancelled, expired), valeurs par défaut
+ * (status=active), et rejet des valeurs invalides.
+ * @see {@link ../../../models/Subscription.js}
+ */
+
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const Subscription = require('../../../models/Subscription');

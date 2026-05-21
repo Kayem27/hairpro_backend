@@ -1,3 +1,12 @@
+/**
+ * @file Tests unitaires des middlewares de validation
+ * @description Vérifie les règles de validation express-validator pour chaque endpoint :
+ * inscription (email, mot de passe, nom), connexion, prise de rendez-vous (format date ISO,
+ * identifiants requis), avis (note 1-5 entière), facturation (plans monthly/annual),
+ * et réinitialisation de mot de passe.
+ * @see {@link ../../../middleware/validate.js}
+ */
+
 const express = require('express');
 const request = require('supertest');
 const {

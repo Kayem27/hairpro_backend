@@ -35,6 +35,7 @@ const allowedOrigin = process.env.APP_URL || 'http://localhost:5173';
 const isProduction = process.env.NODE_ENV === 'production';
 app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
+  crossOriginOpenerPolicy: { policy: 'same-origin' },
   contentSecurityPolicy: isProduction ? {
     directives: {
       defaultSrc: ["'self'"],
@@ -42,13 +43,16 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", "data:", "https://res.cloudinary.com"],
       connectSrc: ["'self'", process.env.APP_URL || 'http://localhost:5173'],
-      fontSrc: ["'self'"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
       objectSrc: ["'none'"],
       frameSrc: ["'none'", "https://checkout.stripe.com"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"],
     }
   } : false,
-  hsts: isProduction ? { maxAge: 31536000, includeSubDomains: true } : false,
-  referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
+  hsts: isProduction ? { maxAge: 31536000, includeSubDomains: true, preload: true } : false,
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  xFrameOptions: { action: 'deny' },
 }));
 
 // HTTP request logging

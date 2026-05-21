@@ -1,4 +1,13 @@
-// Test emailService in fallback mode (no Brevo API key)
+/**
+ * @file Tests unitaires du service d'envoi d'emails
+ * @description Vérifie le fonctionnement du service email en mode simulé (sans clé API Brevo).
+ * Teste l'envoi générique (sendEmail), l'envoi d'email de réinitialisation de mot de passe
+ * (sendPasswordResetEmail), de vérification d'email (sendVerificationEmail), et les
+ * notifications de rendez-vous (sendAppointmentNotification) pour tous les types
+ * (new, accepted, rejected, cancelled), y compris sans notes.
+ * @see {@link ../../../services/emailService.js}
+ */
+
 const originalEnv = process.env;
 
 beforeEach(() => {

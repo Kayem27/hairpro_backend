@@ -1,3 +1,13 @@
+/**
+ * @file Tests unitaires du service de notifications
+ * @description Vérifie le fonctionnement du service de notifications en temps réel.
+ * Teste la gestion de l'instance Socket.io (setIO/getIO), la création de notifications
+ * en base de données, l'émission en temps réel via Socket.io vers la room
+ * personnelle de l'utilisateur (user:{id}), la génération d'identifiants uniques,
+ * et le comportement gracieux sans instance Socket.io configurée.
+ * @see {@link ../../../services/notificationService.js}
+ */
+
 jest.mock('../../../models/Notification', () => {
   return {
     create: jest.fn()

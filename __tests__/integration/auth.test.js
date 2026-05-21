@@ -1,3 +1,14 @@
+/**
+ * @file Tests d'intégration de l'authentification
+ * @description Teste le flux complet d'authentification via les endpoints REST :
+ * inscription (création utilisateur + token + profil pro automatique + hash bcrypt +
+ * token de vérification email), connexion (credentials valides/invalides, compte suspendu),
+ * récupération du profil (/me), vérification d'email par token, mot de passe oublié
+ * (prévention d'énumération) et réinitialisation de mot de passe (token valide/expiré).
+ * Utilise MongoMemoryServer pour une base de données isolée.
+ * @see {@link ../../routes/auth.js}
+ */
+
 const express = require('express');
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');

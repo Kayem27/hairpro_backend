@@ -1,3 +1,11 @@
+/**
+ * @file Tests unitaires du modèle Review (Mongoose)
+ * @description Vérifie le schéma Review : création d'un avis valide, validation de la note
+ * (entier entre 1 et 5), gestion du commentaire optionnel, valeur par défaut de
+ * is_visible=true, et possibilité de masquer un avis.
+ * @see {@link ../../../models/Review.js}
+ */
+
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const Review = require('../../../models/Review');

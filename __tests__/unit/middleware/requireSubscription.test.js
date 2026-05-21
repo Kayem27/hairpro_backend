@@ -1,3 +1,11 @@
+/**
+ * @file Tests unitaires du middleware requireSubscription
+ * @description Vérifie que le middleware bloque l'accès aux fonctionnalités premium
+ * pour les utilisateurs sans abonnement actif, autorise ceux avec un abonnement valide,
+ * et gère correctement les erreurs de base de données.
+ * @see {@link ../../../middleware/requireSubscription.js}
+ */
+
 jest.mock('../../../models/Subscription', () => {
   return { findOne: jest.fn() };
 });

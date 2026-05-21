@@ -1,5 +1,12 @@
-// Test the validatePassword function from auth route
-// We need to extract the logic since it's inline in the router file
+/**
+ * @file Tests unitaires de la validation de mot de passe
+ * @description Vérifie la fonction validatePassword extraite de la route d'authentification.
+ * Teste les règles de complexité : longueur minimale (12 caractères), présence obligatoire
+ * d'une majuscule, d'une minuscule, d'un chiffre et d'un caractère spécial.
+ * Vérifie également l'accumulation de plusieurs erreurs et l'acceptation de
+ * divers caractères spéciaux (!@#$%&*-_).
+ * @see {@link ../../../routes/auth.js}
+ */
 
 describe('validatePassword (logique auth)', () => {
   // Reproducing the function from routes/auth.js

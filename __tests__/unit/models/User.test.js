@@ -1,3 +1,12 @@
+/**
+ * @file Tests unitaires du modèle User (Mongoose)
+ * @description Vérifie le schéma User : champs obligatoires (user_id, email, password_hash,
+ * first_name, last_name), valeurs par défaut (role=client, status=active), contraintes
+ * d'unicité (email, user_id), normalisation (email en minuscules), et énumérations
+ * valides pour les rôles et statuts.
+ * @see {@link ../../../models/User.js}
+ */
+
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const User = require('../../../models/User');

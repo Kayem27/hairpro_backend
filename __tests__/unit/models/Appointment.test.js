@@ -1,3 +1,12 @@
+/**
+ * @file Tests unitaires du modèle Appointment (Mongoose)
+ * @description Vérifie le schéma Appointment : création avec données valides, champs
+ * obligatoires (appointment_id, client_id, profile_id, date, slot_id), valeurs par défaut
+ * (status=pending), énumération des statuts (pending, accepted, rejected, cancelled,
+ * completed), stockage des service_ids, et transitions de statut.
+ * @see {@link ../../../models/Appointment.js}
+ */
+
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const Appointment = require('../../../models/Appointment');
