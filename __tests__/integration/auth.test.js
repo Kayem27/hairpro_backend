@@ -47,7 +47,7 @@ afterEach(async () => {
 describe('POST /api/auth/register', () => {
   const validRegistration = {
     email: 'test@example.com',
-    password: 'MyP@ssw0rd',
+    password: 'MyStr0ngP@ss!',
     firstName: 'Jean',
     lastName: 'Dupont',
   };
@@ -131,7 +131,7 @@ describe('POST /api/auth/register', () => {
 
 describe('POST /api/auth/login', () => {
   beforeEach(async () => {
-    const password_hash = await bcrypt.hash('MyP@ssw0rd', 10);
+    const password_hash = await bcrypt.hash('MyStr0ngP@ss!', 10);
     await User.create({
       user_id: 'user-login-test',
       email: 'login@example.com',
@@ -146,7 +146,7 @@ describe('POST /api/auth/login', () => {
   test('devrait connecter un utilisateur valide', async () => {
     const res = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'login@example.com', password: 'MyP@ssw0rd' });
+      .send({ email: 'login@example.com', password: 'MyStr0ngP@ss!' });
 
     expect(res.status).toBe(200);
     expect(res.body.token).toBeDefined();
@@ -165,7 +165,7 @@ describe('POST /api/auth/login', () => {
   test('devrait refuser un email inexistant', async () => {
     const res = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'unknown@example.com', password: 'MyP@ssw0rd' });
+      .send({ email: 'unknown@example.com', password: 'MyStr0ngP@ss!' });
 
     expect(res.status).toBe(401);
     expect(res.body.error).toBe('Identifiants invalides');
@@ -176,7 +176,7 @@ describe('POST /api/auth/login', () => {
 
     const res = await request(app)
       .post('/api/auth/login')
-      .send({ email: 'login@example.com', password: 'MyP@ssw0rd' });
+      .send({ email: 'login@example.com', password: 'MyStr0ngP@ss!' });
 
     expect(res.status).toBe(403);
     expect(res.body.error).toBe('Compte suspendu');
@@ -190,7 +190,7 @@ describe('GET /api/auth/me', () => {
       .post('/api/auth/register')
       .send({
         email: 'me@example.com',
-        password: 'MyP@ssw0rd',
+        password: 'MyStr0ngP@ss!',
         firstName: 'Marie',
         lastName: 'Martin'
       });
@@ -281,7 +281,7 @@ describe('POST /api/auth/forgot-password', () => {
 
 describe('POST /api/auth/reset-password', () => {
   beforeEach(async () => {
-    const password_hash = await bcrypt.hash('OldP@ssw0rd', 10);
+    const password_hash = await bcrypt.hash('OldStr0ngP@ss!', 10);
     await User.create({
       user_id: 'user-reset',
       email: 'reset@example.com',
@@ -296,14 +296,14 @@ describe('POST /api/auth/reset-password', () => {
   test('devrait réinitialiser le mot de passe avec un token valide', async () => {
     const res = await request(app)
       .post('/api/auth/reset-password')
-      .send({ token: 'valid-reset-token', password: 'NewP@ssw0rd' });
+      .send({ token: 'valid-reset-token', password: 'NewStr0ngP@ss!' });
 
     expect(res.status).toBe(200);
     expect(res.body.message).toBe('Mot de passe réinitialisé avec succès');
 
     // Verify password was changed
     const user = await User.findOne({ user_id: 'user-reset' });
-    const isMatch = await bcrypt.compare('NewP@ssw0rd', user.password_hash);
+    const isMatch = await bcrypt.compare('NewStr0ngP@ss!', user.password_hash);
     expect(isMatch).toBe(true);
     expect(user.reset_token).toBeNull();
     expect(user.reset_token_expires).toBeNull();
@@ -317,7 +317,7 @@ describe('POST /api/auth/reset-password', () => {
 
     const res = await request(app)
       .post('/api/auth/reset-password')
-      .send({ token: 'valid-reset-token', password: 'NewP@ssw0rd' });
+      .send({ token: 'valid-reset-token', password: 'NewStr0ngP@ss!' });
 
     expect(res.status).toBe(400);
     expect(res.body.error).toBe('Token invalide ou expiré');

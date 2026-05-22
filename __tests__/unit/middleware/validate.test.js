@@ -33,7 +33,7 @@ describe('Validation Middleware', () => {
     test('devrait accepter des données valides', async () => {
       const res = await request(app).post('/test').send({
         email: 'test@example.com',
-        password: 'Password1!',
+        password: 'P@ssword1234!',
         firstName: 'Jean',
         lastName: 'Dupont'
       });
@@ -43,7 +43,7 @@ describe('Validation Middleware', () => {
     test('devrait rejeter un email invalide', async () => {
       const res = await request(app).post('/test').send({
         email: 'not-an-email',
-        password: 'Password1!',
+        password: 'P@ssword1234!',
         firstName: 'Jean',
         lastName: 'Dupont'
       });
@@ -64,7 +64,7 @@ describe('Validation Middleware', () => {
     test('devrait rejeter un prénom vide', async () => {
       const res = await request(app).post('/test').send({
         email: 'test@example.com',
-        password: 'Password1!',
+        password: 'P@ssword1234!',
         firstName: '',
         lastName: 'Dupont'
       });
@@ -74,7 +74,7 @@ describe('Validation Middleware', () => {
     test('devrait rejeter un nom vide', async () => {
       const res = await request(app).post('/test').send({
         email: 'test@example.com',
-        password: 'Password1!',
+        password: 'P@ssword1234!',
         firstName: 'Jean',
         lastName: ''
       });
@@ -84,7 +84,7 @@ describe('Validation Middleware', () => {
     test('devrait accepter un rôle valide', async () => {
       const res = await request(app).post('/test').send({
         email: 'test@example.com',
-        password: 'Password1!',
+        password: 'P@ssword1234!',
         firstName: 'Jean',
         lastName: 'Dupont',
         role: 'pro'
@@ -95,7 +95,7 @@ describe('Validation Middleware', () => {
     test('devrait rejeter un rôle invalide', async () => {
       const res = await request(app).post('/test').send({
         email: 'test@example.com',
-        password: 'Password1!',
+        password: 'P@ssword1234!',
         firstName: 'Jean',
         lastName: 'Dupont',
         role: 'admin'
@@ -234,7 +234,7 @@ describe('Validation Middleware', () => {
     test('devrait accepter des données valides', async () => {
       const res = await request(app).post('/test').send({
         token: 'reset-token-abc',
-        password: 'NewPassword1!'
+        password: 'NewP@ssword1234!'
       });
       expect(res.status).toBe(200);
     });
@@ -242,7 +242,7 @@ describe('Validation Middleware', () => {
     test('devrait rejeter un token vide', async () => {
       const res = await request(app).post('/test').send({
         token: '',
-        password: 'NewPassword1!'
+        password: 'NewP@ssword1234!'
       });
       expect(res.status).toBe(400);
     });
