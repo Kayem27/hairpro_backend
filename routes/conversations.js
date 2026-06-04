@@ -92,12 +92,18 @@ router.post('/:id/messages', auth, async (req, res) => {
     // Notify other participant
     const otherUserId = conv.participants.find(p => p !== req.user.user_id);
     if (otherUserId) {
+      // Build the link from the recipient's role so it points to their own
+      // dashboard (a wrong-role link would redirect them to the home page).
+      const recipient = await User.findOne({ user_id: otherUserId });
+      const link = recipient?.role === 'pro'
+        ? '/dashboard/pro/messages'
+        : '/dashboard/client/messages';
       await createNotification({
         user_id: otherUserId,
         type: 'new_message',
         title: 'Nouveau message',
         message: `${req.user.first_name}: ${content.trim().substring(0, 50)}${content.trim().length > 50 ? '...' : ''}`,
-        link: '/dashboard/client/messages'
+        link
       });
     }
 
