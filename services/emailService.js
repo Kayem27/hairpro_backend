@@ -52,6 +52,12 @@ const sendAppointmentNotification = async (email, type, details) => {
     cancelled: 'Un rendez-vous a été annulé'
   };
 
+  // Le type `new` est notifié au professionnel, les autres au client.
+  // On pointe vers le tableau de bord correspondant (sinon /dashboard => 404).
+  const dashboardPath = type === 'new'
+    ? '/dashboard/pro/appointments'
+    : '/dashboard/client/appointments';
+
   return sendEmail({
     to: email,
     subject: `${subjects[type]} - HairPro`,
@@ -60,7 +66,7 @@ const sendAppointmentNotification = async (email, type, details) => {
       <p>Date : ${details.date}</p>
       <p>Créneau : ${details.slot}</p>
       ${details.notes ? `<p>Notes : ${details.notes}</p>` : ''}
-      <p><a href="${process.env.APP_URL}/dashboard" style="background:#1a2e1a;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;">Voir mes rendez-vous</a></p>
+      <p><a href="${process.env.APP_URL}${dashboardPath}" style="background:#1a2e1a;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;">Voir mes rendez-vous</a></p>
     `
   });
 };
