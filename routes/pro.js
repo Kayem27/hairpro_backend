@@ -32,7 +32,7 @@ router.get('/profile', async (req, res) => {
 // PUT /api/pro/profile
 router.put('/profile', requireSubscription, async (req, res) => {
   try {
-    const { description, city, lat, lng, radius_km } = req.body;
+    const { description, city, radius_km } = req.body;
 
     let profile = await Professional.findOne({ user_id: req.user.user_id });
     if (!profile) {
@@ -41,15 +41,11 @@ router.put('/profile', requireSubscription, async (req, res) => {
         user_id: req.user.user_id,
         description: description || '',
         city: city || '',
-        lat: lat || 0,
-        lng: lng || 0,
         radius_km: radius_km || 10
       });
     } else {
       if (description !== undefined) profile.description = description;
       if (city !== undefined) profile.city = city;
-      if (lat !== undefined) profile.lat = lat;
-      if (lng !== undefined) profile.lng = lng;
       if (radius_km !== undefined) profile.radius_km = radius_km;
       await profile.save();
     }
