@@ -180,18 +180,33 @@ const PORTFOLIO_POOL = [
   'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=600&fit=crop'
 ];
 
-const AVATAR_POOL = [
-  'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=400&h=400&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=400&h=400&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1589156280159-27698a70f29e?w=400&h=400&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&h=400&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1573497019418-b400bb3ab074?w=400&h=400&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face'
+// Avatars hébergés sur Cloudinary (visages générés via thispersondoesnotexist.com).
+// Séparés par genre pour assigner une photo cohérente à chaque pro.
+const AVATAR_POOL_HOMME = [
+  'https://res.cloudinary.com/dz7b1qlyw/image/upload/v1780765604/hairpro/avatars/homme-1.jpg',
+  'https://res.cloudinary.com/dz7b1qlyw/image/upload/v1780763490/hairpro/avatars/homme-2.jpg',
+  'https://res.cloudinary.com/dz7b1qlyw/image/upload/v1780763491/hairpro/avatars/homme-3.jpg',
+  'https://res.cloudinary.com/dz7b1qlyw/image/upload/v1780763493/hairpro/avatars/homme-5.jpg',
+  'https://res.cloudinary.com/dz7b1qlyw/image/upload/v1780765609/hairpro/avatars/homme-7.jpg'
 ];
+
+const AVATAR_POOL_FEMME = [
+  'https://res.cloudinary.com/dz7b1qlyw/image/upload/v1780763494/hairpro/avatars/femme-1.jpg',
+  'https://res.cloudinary.com/dz7b1qlyw/image/upload/v1780763495/hairpro/avatars/femme-2.jpg',
+  'https://res.cloudinary.com/dz7b1qlyw/image/upload/v1780765611/hairpro/avatars/femme-3.jpg',
+  'https://res.cloudinary.com/dz7b1qlyw/image/upload/v1780763497/hairpro/avatars/femme-4.jpg',
+  'https://res.cloudinary.com/dz7b1qlyw/image/upload/v1780763498/hairpro/avatars/femme-5.jpg',
+  'https://res.cloudinary.com/dz7b1qlyw/image/upload/v1780765614/hairpro/avatars/femme-6.jpg',
+  'https://res.cloudinary.com/dz7b1qlyw/image/upload/v1780763499/hairpro/avatars/femme-7.jpg',
+  'https://res.cloudinary.com/dz7b1qlyw/image/upload/v1780765616/hairpro/avatars/femme-8.jpg'
+];
+
+// Prénoms féminins parmi les templates de pros (pour assigner le bon avatar).
+const FEMALE_FIRST_NAMES = new Set([
+  'Emma', 'Camille', 'Aminata', 'Sarah', 'Léa', 'Yasmine', 'Inès',
+  'Marie', 'Clara', 'Awa', 'Manon', 'Soraya', 'Léonie'
+]);
+const isFemale = (firstName) => FEMALE_FIRST_NAMES.has(firstName);
 
 // Pro templates : (firstName, lastName, city, specialty, description)
 const PRO_TEMPLATES = [
@@ -371,7 +386,8 @@ async function seed() {
       lat: CITIES.Paris.lat,
       lng: CITIES.Paris.lng,
       radius_km: 15,
-      photo_url: AVATAR_POOL[0],
+      photo_url: AVATAR_POOL_HOMME[0], // Hatem est un homme
+
       is_verified: true,
       is_active: true,
       average_rating: 0,
@@ -380,9 +396,16 @@ async function seed() {
       _specialty: 'modern_color'
     });
 
+    // Compteurs séparés pour recycler les photos par genre.
+    // Hatem (pro-001) ayant déjà pris la 1re photo homme, on démarre à 1 côté homme.
+    let hommeIdx = 1;
+    let femmeIdx = 0;
     PRO_TEMPLATES.forEach((t, i) => {
       const idx = i + 2; // pro-002 onwards
       const profileId = `pro-${String(idx).padStart(3, '0')}`;
+      const photoUrl = isFemale(t.firstName)
+        ? AVATAR_POOL_FEMME[femmeIdx++ % AVATAR_POOL_FEMME.length]
+        : AVATAR_POOL_HOMME[hommeIdx++ % AVATAR_POOL_HOMME.length];
       const city = CITIES[t.city];
       const latJitter = (Math.random() - 0.5) * 0.02; // ~1 km
       const lngJitter = (Math.random() - 0.5) * 0.02;
@@ -394,7 +417,7 @@ async function seed() {
         lat: city.lat + latJitter,
         lng: city.lng + lngJitter,
         radius_km: rand(8, 25),
-        photo_url: AVATAR_POOL[(i + 1) % AVATAR_POOL.length],
+        photo_url: photoUrl,
         is_verified: true,
         is_active: true,
         average_rating: 0,
