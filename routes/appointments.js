@@ -83,6 +83,7 @@ router.post('/', auth, appointmentValidation, async (req, res) => {
 // GET /api/appointments/me - Mes RDV (client)
 router.get('/me', auth, async (req, res) => {
   try {
+    await Appointment.autoCompletePast({ client_id: req.user.user_id });
     const appointments = await Appointment.find({ client_id: req.user.user_id })
       .sort({ created_at: -1 }).lean();
 

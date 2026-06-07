@@ -16,4 +16,16 @@ appointmentSchema.index({ client_id: 1, status: 1 });
 appointmentSchema.index({ profile_id: 1, status: 1 });
 appointmentSchema.index({ date: 1 });
 
+// Bascule automatique : un RDV confirmé (accepted) dont la date est passée
+// devient "completed". Appelé avant de lister les RDV (côté client et pro)
+// pour que la possibilité de laisser un avis apparaisse sans action manuelle.
+// `filter` restreint le lot (ex: { client_id } ou { profile_id }).
+appointmentSchema.statics.autoCompletePast = async function (filter = {}) {
+  const today = new Date().toISOString().slice(0, 10); // 'YYYY-MM-DD'
+  return this.updateMany(
+    { ...filter, status: 'accepted', date: { $lt: today } },
+    { status: 'completed' }
+  );
+};
+
 module.exports = mongoose.model('Appointment', appointmentSchema);

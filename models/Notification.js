@@ -5,7 +5,7 @@ const notificationSchema = new mongoose.Schema({
   user_id: { type: String, required: true, index: true },
   type: {
     type: String,
-    enum: ['appointment_new', 'appointment_accepted', 'appointment_rejected', 'appointment_cancelled', 'new_message', 'new_review'],
+    enum: ['appointment_new', 'appointment_accepted', 'appointment_rejected', 'appointment_cancelled', 'appointment_completed', 'new_message', 'new_review'],
     required: true
   },
   title: { type: String, required: true },

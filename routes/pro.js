@@ -205,6 +205,7 @@ router.get('/appointments', async (req, res) => {
     const profile = await Professional.findOne({ user_id: req.user.user_id });
     if (!profile) return res.json([]);
 
+    await Appointment.autoCompletePast({ profile_id: profile.profile_id });
     const appointments = await Appointment.find({ profile_id: profile.profile_id })
       .sort({ created_at: -1 }).lean();
 
@@ -320,6 +321,41 @@ router.post('/appointments/:id/reject', requireSubscription, async (req, res) =>
     res.json(appointment);
   } catch (err) {
     console.error('Reject appointment error:', err);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// POST /api/pro/appointments/:id/complete - Marquer un RDV comme terminé
+router.post('/appointments/:id/complete', requireSubscription, async (req, res) => {
+  try {
+    const profile = await Professional.findOne({ user_id: req.user.user_id });
+    if (!profile) return res.status(404).json({ error: 'Profil non trouvé' });
+
+    const appointment = await Appointment.findOne({
+      appointment_id: req.params.id,
+      profile_id: profile.profile_id
+    });
+    if (!appointment) return res.status(404).json({ error: 'Rendez-vous non trouvé' });
+    if (appointment.status !== 'accepted') {
+      return res.status(400).json({ error: 'Seul un rendez-vous confirmé peut être marqué comme terminé' });
+    }
+
+    appointment.status = 'completed';
+    await appointment.save();
+
+    // Notify client so they can leave a review
+    const slot = await TimeSlot.findOne({ slot_id: appointment.slot_id });
+    await createNotification({
+      user_id: appointment.client_id,
+      type: 'appointment_completed',
+      title: 'Rendez-vous terminé',
+      message: `Votre RDV du ${appointment.date} (${slot?.label || ''}) est terminé. Laissez un avis !`,
+      link: '/dashboard/client/appointments'
+    });
+
+    res.json(appointment);
+  } catch (err) {
+    console.error('Complete appointment error:', err);
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
